@@ -3,10 +3,7 @@ import re # Biblioteca usada para el uso de expresiones regulares
 
 ''' 
 COSAS QUE HACER:
-    - El fichero empieza a leer en la primera linea con letras
-    - El juego acaba cuando el fichero se quede sin letras 
-    - Arreglar Movimiento
-    - Metodo para comprobar si hay algun hueco por debajo para rellenar 
+    
     
 '''
 
@@ -124,7 +121,7 @@ def comprobarDebajoP(tablero):
                     tablero[x][y] = tablero[x][y]
 
 
-def comprobarFilaCompleta(tablero):
+def comprobarFilaCompleta(tablero,Puntos):
     Valor = 0
     fila = []
     cont = 11
@@ -134,11 +131,22 @@ def comprobarFilaCompleta(tablero):
         if "space" in fila or "000" in fila:
             Valor = Valor
         else:
-            Valor = True
-            for x in range(11):
-                tablero[x][cont] = "000"
-                Valor = Valor + 1
-                comprobarDebajoP(tablero)
+            if len(set(fila)) == 1:
+                Valor = True
+                for x in range(11):
+                    tablero[x][cont] = "000"
+                    Valor = Valor + 1
+                    Puntos[0] = Puntos[0] + 10 
+                    reiniciartablero(tablero)
+                    comprobarDebajoP(tablero)
+            else:
+                Valor = True
+                Puntos[0] = Puntos[0] + 10
+                for x in range(11):
+                    tablero[x][cont] = "000"
+                    Valor = Valor + 1
+                    comprobarDebajoP(tablero)
+                    
         fila = []
         cont -= 1
     
@@ -314,7 +322,8 @@ def hasPerdido(tablero,Jugar):
 
 
 
-indice = 12
+indice = 11
+Puntos = [0,1]
 Jugar = True
 tablero = creartablero()
 if abrirArchivo():
@@ -338,8 +347,9 @@ while Jugar==True:
     dibujartablero(tablero)
     realizarMovimiento(convertirAscii(tablero,detectarJugada()),tablero)
     comprobarDebajoP(tablero)
-    indice = indice + comprobarFilaCompleta(tablero)
+    indice = indice + comprobarFilaCompleta(tablero,Puntos)
     Jugar = hasPerdido(tablero,Jugar)
     if siguienteFila(tablero,archivo) == False:
         Jugar = False
     indice = indice - 1
+    print("    Tu Puntuacion actual es de: " + str(Puntos[0]) + " Puntos ")
